@@ -1,0 +1,12 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: app-example-com
+  namespace: default
+spec:
+  secretName: app-example-com-tls
+  issuerRef:
+    name: vault-issuer
+  commonName: app.example.com
+  dnsNames:
+  - app.example.com

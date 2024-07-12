@@ -1,0 +1,36 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: mongodb-backup
+spec:
+  schedule: "0 0 * * *"
+  concurrencyPolicy: Replace
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: Never
+          serviceAccountName: mongodb-backup-sa
+          containers:
+          - name: "mongodb-backup"
+            image: docker.io/caseykurosawa/cronbackup:latest
+            command: ["/bin/sh", "-c"]
+            args:
+              ["mongodump --uri=\"$MONGODB_URI/go-mongodb\" --authenticationDatabase admin --gzip --archive | aws s3 cp - s3://$S3_BUCKET/$S3_BUCKET_PREFIX/$(date +\"%Y%m%d-%H%M%S-%Z\").archive.gz"]
+            env:
+            - name: "MONGODB_URI"
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb-secret
+                  key: uri
+            - name: "S3_BUCKET"
+              value: "arn:aws:s3:us-west-1:399493128233:accesspoint"
+            - name: "S3_BUCKET_PREFIX"
+              value: "cakuros-mongodbbackup-accesspoint"
+            resources:
+              limits:
+                cpu: 1000m
+                memory: 1000Mi
+              requests:
+                cpu: 100m
+                memory: "256Mi"

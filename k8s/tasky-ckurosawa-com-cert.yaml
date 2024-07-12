@@ -1,0 +1,12 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: tasky-ckurosawa-com
+  namespace: default
+spec:
+  secretName: tasky-ckurosawa-com-tls
+  issuerRef:
+    name: vault-issuer
+  commonName: tasky.example.com
+  dnsNames:
+  - tasky.ckurosawa.com
