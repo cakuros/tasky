@@ -24,4 +24,4 @@ test
 tmp
 
 k8s/secret.yaml
-k8s/cluster-keys.json
+k8s/cluster-keys*
